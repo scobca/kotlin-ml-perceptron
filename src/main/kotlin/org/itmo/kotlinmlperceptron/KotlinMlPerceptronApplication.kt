@@ -37,13 +37,20 @@ class KotlinMlPerceptronApplication : CommandLineRunner {
     }
 
     @PostMapping("/predict")
-    fun predict(@RequestBody input: DoubleArray): PredictionResponseDto {
+    fun predict(@RequestBody input: DoubleArray): Any {
         if (perceptron != null) {
             val prediction = perceptron!!.predict(input)
             val professions = listOf("Designer", "Frontend", "Backend")
             val maxIndex = prediction.indices.maxByOrNull { prediction[it] } ?: 0
+            println(PredictionResponseDto(professions[maxIndex], prediction[maxIndex]))
 
-            return PredictionResponseDto(professions[maxIndex], prediction[maxIndex])
+            var answer = mutableListOf<PredictionResponseDto>()
+            answer.add(PredictionResponseDto(professions[0], prediction[0]))
+            answer.add(PredictionResponseDto(professions[1], prediction[1]))
+            answer.add(PredictionResponseDto(professions[2], prediction[2]))
+
+            println(answer)
+            return answer
         } else {
             return PredictionResponseDto("0", 0.0)
         }
