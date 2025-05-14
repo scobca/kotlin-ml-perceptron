@@ -40,7 +40,7 @@ class KotlinMlPerceptronApplication : CommandLineRunner {
     fun predict(@RequestBody input: DoubleArray): Any {
         if (perceptron != null) {
             val prediction = perceptron!!.predict(input)
-            val professions = listOf("Designer", "Frontend", "Backend")
+            val professions = listOf("Дизайнер", "Frontend", "Backend")
             val maxIndex = prediction.indices.maxByOrNull { prediction[it] } ?: 0
             println(PredictionResponseDto(professions[maxIndex], prediction[maxIndex]))
 
