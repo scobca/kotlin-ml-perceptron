@@ -1,6 +1,3 @@
 spring:
   application:
     name: kotlin-ml-perceptron
-
-files:
-  hiddenMatrix: ${HIDDEN_MATRIX_FILENAME}
