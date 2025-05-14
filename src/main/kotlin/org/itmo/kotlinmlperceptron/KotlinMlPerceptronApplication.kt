@@ -1,6 +1,6 @@
 package org.itmo.kotlinmlperceptron
 
-import org.itmo.kotlinmlperceptron.controllers.dto.PredictionResponseDto
+import org.itmo.kotlinmlperceptron.dto.PredictionResponseDto
 import org.itmo.kotlinmlperceptron.functions.createPerceptron
 import org.itmo.kotlinmlperceptron.functions.train
 import org.itmo.kotlinmlperceptron.structure.InputData
