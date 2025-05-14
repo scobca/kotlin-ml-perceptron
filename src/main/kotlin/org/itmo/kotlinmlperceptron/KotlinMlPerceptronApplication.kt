@@ -1,5 +1,6 @@
 package org.itmo.kotlinmlperceptron
 
+import org.itmo.kotlinmlperceptron.controllers.dto.PredictionResponseDto
 import org.itmo.kotlinmlperceptron.functions.createPerceptron
 import org.itmo.kotlinmlperceptron.functions.train
 import org.itmo.kotlinmlperceptron.structure.InputData
@@ -7,11 +8,19 @@ import org.itmo.kotlinmlperceptron.structure.ProfessionVectors
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @SpringBootApplication
+@RestController
+@RequestMapping("/api/v1/perceptron")
 class KotlinMlPerceptronApplication : CommandLineRunner {
+    private var perceptron: Perceptron? = null
+
     override fun run(vararg args: String?) {
-        val perceptron = createPerceptron()
+        perceptron = createPerceptron()
 
         val inputs = InputData.inputs
         val targets = listOf(
@@ -24,28 +33,20 @@ class KotlinMlPerceptronApplication : CommandLineRunner {
             ProfessionVectors.frontend,
         )
 
-        train(perceptron, inputs, targets, 10000, 0.1)
+        perceptron?.let { train(it, inputs, targets, 10000, 0.1) }
+    }
 
-        val newUserInput = doubleArrayOf(
-            5.0, 1.0406,
-            10.0, 1.9526000000000001,
-            0.3333333333333333, 0.0,
-            7.0, 0.0,
-            8.0, 0.0,
-            14.666666666666666, 1059.0,
-            0.0, 0.0,
-            3.0, 0.0980076246306344,
-            3.0, 0.08821730749973736,
-            1.5, 707.0,
-            4.888888888888889, 366.44444444444446,
-            0.0, 0.0
-        )
-        val prediction = perceptron.predict(newUserInput)
+    @PostMapping("/predict")
+    fun predict(@RequestBody input: DoubleArray): PredictionResponseDto {
+        if (perceptron != null) {
+            val prediction = perceptron!!.predict(input)
+            val professions = listOf("Designer", "Frontend", "Backend")
+            val maxIndex = prediction.indices.maxByOrNull { prediction[it] } ?: 0
 
-        val professions = listOf("Designer", "Frontend", "Backend")
-        val maxIndex = prediction.indices.maxByOrNull { prediction[it] } ?: -1
-
-        println("Predicted profession: ${professions[maxIndex]} with confidence ${prediction[maxIndex]}")
+            return PredictionResponseDto(professions[maxIndex], prediction[maxIndex])
+        } else {
+            return PredictionResponseDto("0", 0.0)
+        }
     }
 }
 
